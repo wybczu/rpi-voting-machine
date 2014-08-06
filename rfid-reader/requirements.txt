@@ -1,0 +1,4 @@
+requests
+RPi.GPIO==0.5.5
+git+https://github.com/lthiery/SPI-Py
+git+https://github.com/wybczu/MFRC522-python

@@ -3,15 +3,15 @@
 - hosts: all
   remote_user: pi
   vars:
-    app_repo: https://github.com/wybczu/rpi-voting-machine.git
-    app_dest_dir: /srv/rfid-reader
-    app_api_endpoint: http://localhost:5000
-    app_supervisor_config: |
+    reader_repo: https://github.com/wybczu/rpi-voting-machine.git
+    reader_dest_dir: /srv/rfid-reader
+    reader_api_endpoint: http://localhost:5000
+    reader_supervisor_config: |
       [program:rfid-reader]
-      command = {{ app_dest_dir }}/rfid-reader/mfrc522-reader.py
-      stdout_logfile = {{ app_dest_dir }}/logs/rfid-reader.log
+      command = {{ reader_dest_dir }}/rfid-reader/mfrc522-reader.py
+      stdout_logfile = {{ reader_dest_dir }}/logs/rfid-reader.log
       redirect_stderr = true
-      environment=API_ENDPOINT='{{ app_api_endpoint }}'
+      environment=API_ENDPOINT='{{ reader_api_endpoint }}'
       killasgroup=true
       stopasgroup=true  
        
@@ -35,24 +35,22 @@
       state: absent
 
   - name: clone reader repo
-    git: repo={{ app_repo }} dest={{ app_dest_dir }} update=yes
+    git: repo={{ reader_repo }} dest={{ reader_dest_dir }} update=yes
 
   - name: create logs directory
-    file: path={{ app_dest_dir}}/logs state=directory
+    file: path={{ reader_dest_dir}}/logs state=directory
 
   - name: install reader deps
     pip:
-      requirements: "{{ app_dest_dir }}/rfid-reader/requirements.txt"
-      virtualenv: "{{ app_dest_dir }}/venv"
+      requirements: "{{ reader_dest_dir }}/rfid-reader/requirements.txt"
+      virtualenv: "{{ reader_dest_dir }}/venv"
 
   - name: create supervisor configuration file
     copy:
       dest: /etc/supervisor/conf.d/rfid-reader.conf 
       force: yes 
-      content: '{{ app_supervisor_config }}'
+      content: '{{ reader_supervisor_config }}'
 
   - name: enable rfid-reader service
     supervisorctl: name=rfid-reader state=present
 
-#  - name: enable rfid-reader service
-#    supervisorctl: name=rfid-reader state=started

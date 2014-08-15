@@ -4,6 +4,7 @@
 import RPi.GPIO as GPIO
 import signal
 import sys
+import os
 import time
 import requests
 import logging
@@ -11,7 +12,7 @@ import multiprocessing
 from MFRC522 import MFRC522
 from uuid import getnode
 
-API_ENDPOINT = 'http://localhost:5000/vote'
+API_ENDPOINT = os.environ.get('API_ENDPOINT', 'http://localhost:5000/vote')
 API_TIMEOUT = 2
 
 GPIO_LED_0, GPIO_LED_1 = 11, 12 

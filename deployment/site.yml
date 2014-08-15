@@ -1,0 +1,58 @@
+---
+
+- hosts: all
+  remote_user: pi
+  vars:
+    app_repo: https://github.com/wybczu/rpi-voting-machine.git
+    app_dest_dir: /srv/rfid-reader
+    app_api_endpoint: http://localhost:5000
+    app_supervisor_config: |
+      [program:rfid-reader]
+      command = {{ app_dest_dir }}/rfid-reader/mfrc522-reader.py
+      stdout_logfile = {{ app_dest_dir }}/logs/rfid-reader.log
+      redirect_stderr = true
+      environment=API_ENDPOINT='{{ app_api_endpoint }}'
+      killasgroup=true
+      stopasgroup=true  
+       
+  tasks:
+ 
+  - name: install required packages
+    apt: name={{ item }} update_cache=yes
+    with_items:
+      - python-virtualenv
+      - python-dev
+      - supervisor
+      - ntp
+
+  - name: enable spi-bcm2708 module
+    modprobe: name=spi-bcm2708 state=present
+
+  - name: whitelist spi-bcm2708
+    kernel_blacklist:
+      blacklist_file: /etc/modprobe.d/raspi-blacklist.conf
+      name: spi-bcm2708 
+      state: absent
+
+  - name: clone reader repo
+    git: repo={{ app_repo }} dest={{ app_dest_dir }} update=yes
+
+  - name: create logs directory
+    file: path={{ app_dest_dir}}/logs state=directory
+
+  - name: install reader deps
+    pip:
+      requirements: "{{ app_dest_dir }}/rfid-reader/requirements.txt"
+      virtualenv: "{{ app_dest_dir }}/venv"
+
+  - name: create supervisor configuration file
+    copy:
+      dest: /etc/supervisor/conf.d/rfid-reader.conf 
+      force: yes 
+      content: '{{ app_supervisor_config }}'
+
+  - name: enable rfid-reader service
+    supervisorctl: name=rfid-reader state=present
+
+#  - name: enable rfid-reader service
+#    supervisorctl: name=rfid-reader state=started

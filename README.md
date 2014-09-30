@@ -4,7 +4,7 @@ Raspberry Pi voting machine (PoC)
 Schmatic
 --------
 
-![schematic][schematic.png]
+![schematic](schematic.png)
 
 Pins
 ----

@@ -15,7 +15,7 @@ from uuid import getnode
 API_ENDPOINT = os.environ.get('API_ENDPOINT', 'http://localhost:5000/vote')
 API_TIMEOUT = 2
 
-GPIO_LED_0, GPIO_LED_1 = 11, 12 
+GPIO_LED_0, GPIO_LED_1 = 11, 13 
 
 class Reader(multiprocessing.Process):
 

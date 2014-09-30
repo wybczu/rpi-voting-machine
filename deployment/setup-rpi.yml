@@ -2,6 +2,7 @@
 
 - hosts: all
   remote_user: pi
+  sudo: yes
   vars:
     reader_repo: https://github.com/wybczu/rpi-voting-machine.git
     reader_dest_dir: /srv/rfid-reader
@@ -43,7 +44,6 @@
   - name: install reader deps
     pip:
       requirements: "{{ reader_dest_dir }}/rfid-reader/requirements.txt"
-      virtualenv: "{{ reader_dest_dir }}/venv"
 
   - name: create supervisor configuration file
     copy:

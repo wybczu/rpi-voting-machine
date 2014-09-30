@@ -1,6 +1,12 @@
 Raspberry Pi voting machine (PoC)
 =================================
 
+Part list
+---------
+
+ * Raspberry Pi model B
+ * 2 x MF522 RFID readers
+
 Schematic
 ---------
 
